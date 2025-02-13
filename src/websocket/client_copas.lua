@@ -29,8 +29,8 @@ local new = function(ws)
   end
   
   self.sock_close = function(self)
-    self.sock:shutdown()
-    self.sock:close()
+    --self.sock:shutdown()
+    pcall( function() self.sock:close() end ) 
   end
   
   self = sync.extend(self)
