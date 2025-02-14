@@ -47,19 +47,24 @@ local upgrade_request = function(req)
   end
   local lines = {
     format('GET %s HTTP/1.1',req.uri or ''),
-    format('Host: %s',req.host),
     'Upgrade: websocket',
-    'Connection: Upgrade',
+    format('Host: %s',req.host),
     format('Sec-WebSocket-Key: %s',req.key),
     format('Sec-WebSocket-Protocol: %s',table.concat(req.protocols,', ')),
     'Sec-WebSocket-Version: 13',
+    'Connection: Upgrade',
     table.unpack(headers) --Here we add our own headers...
   }
+  local n = 0
   if req.origin then
-    tinsert(lines,string.format('Origin: %s',req.origin))
+    tinsert(lines,4,string.format('Origin: %s',req.origin))
+    n=1
   end
   if req.port and req.port ~= 80 then
-    lines[2] = format('Host: %s:%d',req.host,req.port)
+   -- lines[2] = format('Host: %s:%d',req.host,req.port)
+  end
+  if #req.protocols == 0 then
+    table.remove(lines,5+n)
   end
   tinsert(lines,'\r\n')
   return table.concat(lines,'\r\n')
