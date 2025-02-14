@@ -117,7 +117,7 @@ local close = function(self,code,reason)
   return was_clean,code,reason or ''
 end
 
-local connect = function(self,ws_url,ws_protocol,ssl_params,uheaders)
+local connect = function(self,ws_url,ws_protocol,ssl_params,uheaders,debug)
   if self.state ~= 'CLOSED' then
     return nil,'wrong state',nil
   end
@@ -129,7 +129,12 @@ local connect = function(self,ws_url,ws_protocol,ssl_params,uheaders)
   end
   if protocol == 'wss' then
     self.sock = ssl.wrap(self.sock, ssl_params)
-    self.sock:dohandshake()
+    if self.sock == nil then
+      return nil, 'ssl.wrap failed. Bad ssl_params?', nil
+    end
+    self.sock:dohandshake()    
+    local succ, errs = self.sock:getpeerverification()
+    if debug then print("getpeerverification", succ, errs) end
   elseif protocol ~= "ws" then
     return nil, 'bad protocol'
   end
@@ -152,7 +157,8 @@ local connect = function(self,ws_url,ws_protocol,ssl_params,uheaders)
     protocols = ws_protocols_tbl,
     uri = uri,
     headers = uheaders or {},
-    origin = origin:match('^(.-):%d+$') or origin
+    origin = origin:match('^(.-):%d+$') or origin,
+    debug = debug
   }
   local n,err = self:sock_send(req)
   if n ~= #req then

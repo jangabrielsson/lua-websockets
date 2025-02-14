@@ -67,7 +67,9 @@ local upgrade_request = function(req)
     table.remove(lines,5+n)
   end
   tinsert(lines,'\r\n')
-  return table.concat(lines,'\r\n')
+  local str = table.concat(lines,'\r\n')
+  if req.debug then print('Upgrade Request:\n',str) end
+  return str
 end
 
 local accept_upgrade = function(request,protocols)

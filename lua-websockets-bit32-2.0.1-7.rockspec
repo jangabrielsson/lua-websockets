@@ -1,5 +1,5 @@
 package = "lua-websockets-bit32"
-version = "2.0.1-6"
+version = "2.0.1-7"
 
 source = {
    url = "git://github.com/jangabrielsson/lua-websockets",     
