@@ -140,6 +140,10 @@ local connect = function(self,ws_url,ws_protocol,ssl_params,uheaders)
       ws_protocols_tbl = ws_protocol
   end
   local key = tools.generate_key()
+  local origin = string.format("https://%s:%d",host,port)
+  if protocol == 'ws' then
+    origin = string.format("http://%s:%d",host,port)
+  end
   local req = handshake.upgrade_request
   {
     key = key,
@@ -147,7 +151,8 @@ local connect = function(self,ws_url,ws_protocol,ssl_params,uheaders)
     port = port,
     protocols = ws_protocols_tbl,
     uri = uri,
-    headers = uheaders or {}
+    headers = uheaders or {},
+    origin = origin
   }
   local n,err = self:sock_send(req)
   if n ~= #req then
