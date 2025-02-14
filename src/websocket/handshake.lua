@@ -41,6 +41,10 @@ end
 
 local upgrade_request = function(req)
   local format = string.format
+  local headers = {}
+  for k,v in pairs(req.headers or {}) do
+    headers[k] = string.format('%s: %s',k,v)
+  end
   local lines = {
     format('GET %s HTTP/1.1',req.uri or ''),
     format('Host: %s',req.host),
@@ -49,6 +53,7 @@ local upgrade_request = function(req)
     format('Sec-WebSocket-Key: %s',req.key),
     format('Sec-WebSocket-Protocol: %s',table.concat(req.protocols,', ')),
     'Sec-WebSocket-Version: 13',
+    table.unpack(headers) --Here we add our own headers...
   }
   if req.origin then
     tinsert(lines,string.format('Origin: %s',req.origin))
