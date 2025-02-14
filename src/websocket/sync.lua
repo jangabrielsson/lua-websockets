@@ -147,12 +147,12 @@ local connect = function(self,ws_url,ws_protocol,ssl_params,uheaders)
   local req = handshake.upgrade_request
   {
     key = key,
-    host = host:match('^(.-):') or host,
+    host = host,
     port = port,
     protocols = ws_protocols_tbl,
     uri = uri,
     headers = uheaders or {},
-    origin = origin:match('^(.-):') or origin
+    origin = origin:match('^(.-):%d+$') or origin
   }
   local n,err = self:sock_send(req)
   if n ~= #req then
